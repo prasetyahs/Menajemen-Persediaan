@@ -38,13 +38,13 @@ $fetch = mysqli_fetch_all($ex, MYSQLI_ASSOC);
                                 <td><?= $row['nama_user'] ?></td>
                                 <td><?= $row['level'] ?></td>
                                 <td><?= $row['username'] ?></td>
-                                <td><?= $row['telepon']?></td>
+                                <td><?= $row['telepon'] ?></td>
                                 <td><?= $row['email'] ?></td>
                                 <td><?= $row['status'] ?></td>
 
                                 <td><?= $row['keterangan'] ?></td>
                                 <td>
-                                    <button href="#" class="btn btn-warning"><i class="fas fa-pencil-alt"></i></button>
+                                    <button onclick="editPengguna(this)"  data-keterangan ="<?= $row['keterangan'] ?>" data-id="<?= $row['id_user'] ?>" data-nama="<?= $row['nama_user'] ?>" data-level="<?= $row['level']  ?>" data-username="<?= $row['username'] ?> " data-telepon="<?= $row['telepon'] ?>" data-email="<?= $row['email'] ?>" data-status="<?= $row['status'] ?>" class="btn-edit-pengguna btn btn-warning"><i class="fas fa-pencil-alt"></i></button>
                                     <a href="process/delete-pengguna.php?id=<?= $row['id_user'] ?>" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>

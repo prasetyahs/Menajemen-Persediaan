@@ -16,6 +16,9 @@ if ($tipeTransaksi == 0) {
     $data['sisa'] = $getStok['stok'] + $data['pembelian'];
     update(['stok' => $getStok['stok'] + $data['pembelian']], ['id_barang' => $data['id_barang']], "tb_barang", $conn);
 } else {
+    if ($getStok['stok'] < $data['pembelian']) {
+        echo "<script>alert('Stok Kurang Dari Jumlah Pengeluaran');window.location.href='../index.php?page=barang-masuk&tipe_transaksi=$tipeTransaksi'</script>";
+    }
     $data['sisa'] = $getStok['stok'] - $data['pembelian'];
     $data['pemakaian'] = $data['pembelian'];
     update(['stok' => $getStok['stok'] - $data['pembelian']], ['id_barang' => $data['id_barang']], "tb_barang", $conn);

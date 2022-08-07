@@ -31,10 +31,11 @@ $ex = mysqli_query($conn, $query);
 $fetch = mysqli_fetch_all($ex, MYSQLI_ASSOC);
 
 $idbarang = isset($_GET['id_barang']) ? $_GET['id_barang'] : $fetch[0]['id_barang'];
-$data = readDataAllRow($conn, "SELECT DISTINCT MONTHNAME(tanggal) as `Month` , ' ', YEAR(tanggal) AS `Year` FROM tb_transaksi where tipe_transaksi = 1 and id_barang='$idbarang' order by tanggal ASC");
+$data = readDataAllRow($conn, "SELECT DISTINCT '*',MONTHNAME(tanggal) as `Month` , ' ', YEAR(tanggal) AS `Year` FROM tb_transaksi where tipe_transaksi = 1 and id_barang='$idbarang' order by tanggal ASC");
 
 
-$dataPemakaian = readDataAllRow($conn, "SELECT tanggal,pemakaian FROM  tb_transaksi where tipe_transaksi = 1 and id_barang='$idbarang'");
+
+$dataPemakaian = readDataAllRow($conn, "SELECT tanggal,pemakaian FROM  tb_transaksi where tipe_transaksi = 1 and id_barang='$idbarang' order by tanggal ASC");
 
 $dataTrans  = array();
 
@@ -101,7 +102,7 @@ for ($a = 0; $a < count($dma); $a++) {
         <div class="card-body">
             <div class="row">
                 <div class="col-12">
-                    <h2>Analisa <?= $idbarang. " "  ?></h2>
+                    <h2>Analisa <?= $idbarang . " "  ?></h2>
                 </div>
                 <div class="col-12">
                     <div class="table-responsive">
@@ -114,6 +115,7 @@ for ($a = 0; $a < count($dma); $a++) {
                                 <th>AT</th>
                                 <th>BT</th>
                                 <th>Ft</th>
+                                <th>RMSE</th>
                             </thead>
                             <tbody>
                                 <?php
@@ -122,6 +124,7 @@ for ($a = 0; $a < count($dma); $a++) {
                                 $maChart = [];
                                 $dmaChart = [];
                                 for ($i = 0; $i < count($data); $i++) { ?>
+                                    <?php $rmse =  round(pow(((isset($ft[$j]) ? $ft[$j] : 0) - (isset($at[$j]) ? $at[$j] : 0)), 2), 2)  ?>
                                     <tr>
                                         <td><?= $data[$i]['Month'] . " " . $data[$i]["Year"] ?></td>
                                         <td><?= $permintaan[$i] ?></td>
@@ -130,13 +133,23 @@ for ($a = 0; $a < count($dma); $a++) {
                                         <td><?= isset($at[$j]) ? round($at[$j], 2) : 0  ?></td>
                                         <td><?= isset($bt[$j]) ? round($bt[$j], 2) : 0  ?></td>
                                         <td><?= isset($ft[$j]) ? round($ft[$j]) : 0  ?></td>
+                                        <td><?= $rmse ?></td>
                                     </tr>
                                 <?php
                                     array_push($atChart, isset($at[$j]) ? round($at[$j], 2) : 0);
                                     array_push($maChart, isset($ma[$j]) ? round($ma[$j], 2) : 0);
                                     array_push($dmaChart, isset($dma[$j]) ? round($dma[$j], 2) : 0);
+                                    $rmseTotal = +$rmse;
                                     $j--;
                                 } ?>
+                                <tr>
+                                    <td colspan="7">Jumlah : </td>
+                                    <td><span style="font-weight:bold"><?= isset($rmseTotal) ? $rmseTotal : 0  ?></span> </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7">RMSE : </td>
+                                    <td><span style="font-weight:bold"><?= isset($rmseTotal) ? round(sqrt($rmseTotal / count($data)), 2) : 0 ?></span> </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

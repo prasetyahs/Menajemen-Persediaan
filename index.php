@@ -65,7 +65,7 @@ include "config/connect.php";
                     <ul class="sidebar-menu">
                         <li><a href="index.php?page=dashboard" class="nav-link active"><i class="fas fa-fire"></i> <span>Dashboard</span></a></li>
                         <li><a href="index.php?page=barang" class="nav-link"><i class="fas fa-boxes"></i> <span>Barang</span></a></li>
-                        <li><a href="index.php?page=rekapitulasi" class="nav-link"><i class="fas fa-server"></i> <span>Rekapitulasi</span></a></li>
+                        <li><a href="index.php?page=rekap" class="nav-link"><i class="fas fa-server"></i> <span>Rekapitulasi</span></a></li>
                         <li><a href="index.php?page=prediksi" class="nav-link"><i class="fas fa-diagnoses"></i> <span>Prediksi</span></a></li>
                         <li class="menu-header">Transaksi</li>
                         <li><a class="nav-link" href="index.php?page=barang-masuk&tipe_transaksi=0"><i class="fas fa-inbox"></i><span>Barang Masuk</span></a></li>
@@ -106,6 +106,10 @@ include "config/connect.php";
                             <?php include "page/pengguna.php" ?>
                         <?php } else if ($_GET['page'] == "dma") { ?>
                             <?php include "page/analisa-dma.php" ?>
+                        <?php } else if ($_GET['page'] == "dashboard") { ?>
+                            <?php include "page/dashboard.php" ?>
+                        <?php } else if ($_GET['page'] == 'rekap') { ?>
+                            <?php include "page/rekap.php" ?>
                         <?php } ?>
                     </div>
                 </section>
@@ -144,25 +148,70 @@ include "config/connect.php";
     <script src="assets/js/scripts.js"></script>
     <script src="assets/js/custom.js"></script>
     <script>
+        function printData() {
+            var divToPrint = document.getElementById("printTable");
+            newWin = window.open("");
+            newWin.document.write(divToPrint.outerHTML);
+            newWin.print();
+            newWin.close();
+        }
+
+        $('button').on('click', function() {
+            printData();
+        })
+
+        function editPengguna(d) {
+            $("#editPengguna").modal()
+            $('#editPengguna input[name="id_user"]').val($(d).data("id"))
+            $('#editPengguna input[name="nama_user"]').val($(d).data("nama"))
+            $('#editPengguna input[name="level"]').val($(d).data("level"))
+            $('#editPengguna input[name="email"]').val($(d).data("email"))
+            $('#editPengguna input[name="telepon"]').val($(d).data("telepon"))
+            $('#editPengguna input[name="username"]').val($(d).data("username"))
+            $('#editPengguna input[name="password"]').val($(d).data("password"))
+            $('#editPengguna textarea[name="keterangan"]').val($(d).data("keterangan"))
+
+        }
+
+        function editBarang(d) {
+            $("#editbarang").modal()
+            $('#editbarang input[name="id_barang"]').val($(d).data("id"))
+            $('#editbarang input[name="nama_barang"]').val($(d).data("nama"))
+            $('#editbarang input[name="stok"]').val($(d).data("stok"))
+            $('#editbarang textarea[name="deskripsi"]').val($(d).data("deskripsi"))
+            $('#editbarang textarea[name="keterangan"]').val($(d).data("keterangan"))
+        }
         $('.data-table').dataTable({
             responsive: true,
             dom: 'Bfrtip',
             search: true,
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
-            ]
+            "ordering": false,
+            buttons: [{
+                extend: 'copy',
+                attr: {
+                    id: 'allan'
+                }
+            }, 'csv', 'excel', 'pdf']
 
         });
         $('#btn-barang-add').click(function() {
             $("#exampleModal").modal()
         })
+
         $('#btn-pengguna-add').click(function() {
             $("#addPengguna").modal()
         })
         $('#btn-barang-masuk').click(function() {
             $("#barang-masuk-modal").modal()
         })
-       
+
+        $("#btn-import").click(function() {
+            $('#getFile').trigger('click');
+            $('#getFile').change(function() {
+                $("#import").click();
+            });
+
+        })
     </script>
 </body>
 
@@ -229,6 +278,59 @@ $countBarang = mysqli_num_rows($ex);
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="editPengguna" tabindex="-1" aria-labelledby="editPenggunaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPenggunaLabel">Tambah Data</h5>
+                <button type="button" class="btn btn-transparent"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div class="modal-body">
+                <form action="process/update-pengguna.php" method="post">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">ID Pengguna</label>
+                        <input required type="text" name="id_user" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Nama Pengguna</label>
+                        <input required type="text" name="nama_user" class="form-control" required required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Level</label>
+                        <select class="form-control" required name="level">
+                            <option>--Pilih--</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Staff Gudang">Staff Gudang</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Email</label>
+                        <input required type="text" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Telepon</label>
+                        <input required type="tel" name="telepon" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Username</label>
+                        <input required type="text" name="username" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Keterangan</label>
+                        <textarea name="keterangan" type="text" class="form-control" required></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <?php
 
 $query = "SELECT id_barang  FROM tb_barang";
@@ -236,6 +338,52 @@ $ex = mysqli_query($conn, $query);
 $countBarang = mysqli_num_rows($ex);
 
 ?>
+
+<div class="modal fade" id="editbarang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data</h5>
+                <button type="button" class="btn btn-transparent"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div class="modal-body">
+                <form action="process/update-barang.php" method="post">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">ID Barang</label>
+                        <input required type="text" name="id_barang" class="form-control" value="BRG0<?= $countBarang + 1 ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Nama Barang</label>
+                        <input required type="text" name="nama_barang" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Stok</label>
+                        <input required type="number" name="stok" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Deskripsi</label>
+                        <textarea required type="text" name="deskripsi" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Gambar</label>
+                        <div class="custom-file">
+                            <input required name="gambar" type="file" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Keterangan</label>
+                        <textarea required name="keterangan" type="text" class="form-control"></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
