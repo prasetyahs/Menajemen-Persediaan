@@ -71,8 +71,8 @@ include "config/connect.php";
                         <li><a class="nav-link" href="index.php?page=barang-masuk&tipe_transaksi=0"><i class="fas fa-inbox"></i><span>Barang Masuk</span></a></li>
                         <li><a class="nav-link" href="index.php?page=barang-keluar&tipe_transaksi=1"> <i class="fas fa-boxes"></i> Barang Keluar</a></li>
                         <li class="menu-header">Analisa</li>
-                        <li><a class="nav-link" href="index.php?page=dma"><i class="fas fa-chart-area"></i> <span>DMA</span></a></li>
-                        <li><a class="nav-link" href="index.php?page=barang-masuk&tipe_transaksi=0"><i class="fas fa-chart-line"></i> <span>POQ</span> </a></li>
+                        <li id="dma"><a class="nav-link" href="#"><i class="fas fa-chart-area"></i> <span>DMA</span></a></li>
+                        <li id="poqModal"><a class="nav-link" href="#" onclick="showModalPOQ()"><i class="fas fa-chart-line"></i> <span>POQ</span> </a></li>
 
                         <li class="menu-header">User</li>
                         <li><a href="index.php?page=pengguna" class="nav-link"><i class="fas fa-user-friends"></i> <span>Pengguna</span></a></li>
@@ -110,6 +110,8 @@ include "config/connect.php";
                             <?php include "page/dashboard.php" ?>
                         <?php } else if ($_GET['page'] == 'rekap') { ?>
                             <?php include "page/rekap.php" ?>
+                        <?php } else if ($_GET['page'] == 'poq') { ?>
+                            <?php include "page/analisa-poq.php" ?>
                         <?php } ?>
                     </div>
                 </section>
@@ -159,6 +161,11 @@ include "config/connect.php";
         $('button').on('click', function() {
             printData();
         })
+
+        function showModalPOQ() {
+            $("#analisaPOQ").modal()
+
+        }
 
         function editPengguna(d) {
             $("#editPengguna").modal()
@@ -223,6 +230,43 @@ $ex = mysqli_query($conn, $query);
 $countBarang = mysqli_num_rows($ex);
 
 ?>
+
+
+<div class="modal fade" id="analisaPOQ" tabindex="-1" aria-labelledby="addPenggunaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPenggunaLabel">Analisis POQ</h5>
+                <button type="button" class="btn btn-transparent"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div class="modal-body">
+                <form action="index.php?page=poq" method="get">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Analisis Berapa Bulan Kedepan?</label>
+                        <input type="number" name="bulan" class="form-control" required required>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="page" class="form-control" value="poq" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Pemesanan</label>
+                        <input type="number" name="pemesanan" class="form-control" required required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Penyimpanan</label>
+                        <input type="number" name="penyimpanan" class="form-control" required required>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="modal fade" id="addPengguna" tabindex="-1" aria-labelledby="addPenggunaLabel" aria-hidden="true">
     <div class="modal-dialog">
